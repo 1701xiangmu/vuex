@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			p.even{
+				background: blue;
+			}
+			.ppp{
+				background: red;
+			}
+			.active{
+				color:red;
+			}
+			.hide{display: none;}
+			.show{
+				display: none;
+			}
+			.btn{
+				
+				background: green;
+			}
+			.btn img{
+				width: 200px;
+				height:200px;
+			}
+			.disabled{
+				background: grey;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<button @click="add">加1</button>
+			<p class="ppp" :class="{even:count%2==0}">{{count}}</p>
+			<span v-if="count%2!==0">奇数</span>
+			<span v-else>偶数</span>
+			<ul>
+				<li v-for="(na,int) in list" v-if="int<3" @click="bg(int)" :class="{active:index==int}">{{na.name}}</li>
+				
+			</ul>
+			
+			
+			<!--<div class="btn" @click="toggle">
+				<img src="img/airscape.png" :class="{hide:ishide}" />
+				<img src="img/bg_2.png" :class="{show:isshow}" />
+				<img src="img/airscape.png" v-show="isshow" />
+				<img src="img/bg_2.png" v-show="!isshow" />
+			</div>-->
+			<div class="btn" @click="isshow=!isshow">
+				<img src="img/img/airscape.png" v-show="isshow" />
+				<img src="img/img/bg.png" v-show="!isshow" />
+			</div>
+			<input type="text" v-model="tel" />
+			<div class="btn" @click="submit" :class="{disabled:disabled}">提交</div>
+		</div>
+		
+		<script type="text/javascript" src="js/vue.js" ></script>
+		<script type="text/javascript" src="js/vuex.js" ></script>
+		<script>
+			 Vue.use(Vuex);
+			const store = new Vuex.Store({
+			  state: {
+			    count: 5,
+			    usename:'2',
+			    
+			  },
+			  mutations: {
+			    increment (state,params) {
+			      state.count+=params;
+			    },
+			    showusername(state2){
+			    	alert(state.usename)
+			    }
+			  },
+			  getters:{
+	             //过滤state数据
+	             getCount:function(state){
+	             	return state.count;
+	             }
+	         },
+	         actions:{
+	             //
+	             add(state,params){
+	             	console.log("canshu",params);
+	             	state.commit("increment",params);//相当于调用mutations中的函数
+	             }
+	         }
+			})
+			/*store.commit('increment')
+			store.commit('showusername')*/
+//			store.dispatch("add",2);
+			console.log(store.getters.getCount);//store.getters.getCount可以共享state中的值
+			//console.log(store.state.count) // -> 
+			new Vue({
+				el: "#app",
+				store: store,
+				data:{
+					count: 0,
+					list:[
+						{name:"张三"},
+						{name:"张三"},
+						{name:"张三"},
+						{name:"张三"},
+						{name:"张三"}
+					],
+					isactive:false,
+			    	index:0,
+			    	ishide:true,
+			    	isshow:false,
+			    	tel: "",
+			    	disabled: true
+				},
+				methods:{
+					add(){
+						this.$store.dispatch("add",1);//dispatch==调用actions add 函数，1传的参数
+						//this.$store.commit("increment",2);
+//						this.$store.state.count+=2;
+						this.count = this.$store.getters.getCount;
+					},
+					bg(int){
+						this.index = int;
+						
+					},
+					toggle(){
+						this.ishide=!this.ishide;
+						this.isshow=!this.isshow;
+					},
+					submit(){
+						if(!this.disabled){
+							console.log(this.tel);
+						}
+					}
+				},
+				mounted(){
+					this.count = this.$store.getters.getCount;
+				},
+				watch:{
+					"tel":function(newVal,oldVal){
+						if(newVal.length==11){
+							this.disabled = false;
+						}else{
+							this.disabled = true;
+						}
+					}
+				}
+			})
+		</script>
+	</body>
+</html>
